@@ -1,0 +1,26 @@
+Title: Deployment pipeline
+
+Delivery Team->Version Control: Check in
+Version Control->Build & Unit Tests: Trigger
+note right of Build & Unit Tests: F=Fail P=Pass
+Build & Unit Tests->Build & Unit Tests: F
+Build & Unit Tests->Delivery Team: Feedback
+
+Delivery Team->Version Control: Check in
+Version Control->Build & Unit Tests: Trigger
+Build & Unit Tests->Build & Unit Tests: P
+Build & Unit Tests->Delivery Team: Feedback
+Build & Unit Tests->Automated Acceptance Tests: Trigger
+Automated Acceptance Tests->Automated Acceptance Tests: F
+Automated Acceptance Tests->Delivery Team: Feedback
+
+Delivery Team->Version Control: Check in
+Version Control->Build & Unit Tests: Trigger
+Build & Unit Tests->Build & Unit Tests: P
+Build & Unit Tests->Delivery Team: Feedback
+Build & Unit Tests->Automated Acceptance Tests: Trigger
+Automated Acceptance Tests->Automated Acceptance Tests: P
+Automated Acceptance Tests->Delivery Team: Feedback
+Automated Acceptance Tests->User Acceptance Tests: Approval
+User Acceptance Tests->User Acceptance Tests: P
+User Acceptance Tests->Release: Approval
