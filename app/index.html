@@ -66,16 +66,12 @@
     <!-- App -->
     <script>
       $(document).ready(function () {
-        var dir = "data";
         var ext = ".txt";
         var select = $("#diagrams");
 
-        $.get(dir, function(data) {
-            $(data).find("a:contains(" + ext + ")").each(function () {
-              select.append($('<option>').text(this.title.replace(ext,'')).val(this.title));
-            });
-            //force selection
-            select.change();
+        $.getJSON( "data/diagrams.json", function(data) {
+          appendToList(select, data);
+          select.change();
         });
 
          //eventhandler
@@ -83,16 +79,28 @@
             //clear dir
             $("#diagram").empty();
 
-            var file = select.val();
-            $.get(dir + '/' + file, function (data) {
-                var diagram = Diagram.parse(data);
-                var options = {
-                  theme: 'simple',
-                  scale: 1
-                }
-                diagram.drawSVG('diagram',options);
-            });
+            var data = select.val();
+            var diagram = Diagram.parse(data);
+            var options = {
+              theme: 'simple',
+              scale: 1
+            }
+            diagram.drawSVG('diagram',options);
         });
+
+        function appendToList(element, data) {
+          $.each(data, function(key, val) {
+            if (typeof val == "string") {
+              element.append($('<option>').text(key.replace(ext,'')).val(val));
+            }
+            else {
+              //<optgroup label="Swedish Cars">
+              var optgroup = $('<optgroup>').attr('label', key.replace(ext,''));
+              element.append(optgroup);
+              appendToList(optgroup, val);
+            };
+          });
+        }
       })
     </script>
   </body>
