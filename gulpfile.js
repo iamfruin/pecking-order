@@ -1,6 +1,7 @@
 // generated on 2016-06-22 using generator-webapp 2.1.0
 const gulp = require('gulp');
 const gulpLoadPlugins = require('gulp-load-plugins');
+const fc2json = require('gulp-file-contents-to-json');
 const browserSync = require('browser-sync');
 const del = require('del');
 const wiredep = require('wiredep').stream;
@@ -61,8 +62,15 @@ gulp.task('html', ['styles', 'scripts'], () => {
 });
 
 gulp.task('data', () => {
-  return gulp.src(['app/data/*.txt', '!app/data/*example*.txt'])
-    .pipe(gulp.dest('dist/data'));
+  return gulp.src(['app/data/**/*', '!app/data/**/*example*', '!app/data/diagrams.json'])
+  .pipe(fc2json('diagrams.json'))
+  .pipe(gulp.dest('dist/data'));
+});
+
+gulp.task('test-data', () => {
+  return gulp.src(['app/data/**/*', '!app/data/diagrams.json'])
+  .pipe(fc2json('diagrams.json'))
+  .pipe(gulp.dest('app/data'));
 });
 
 gulp.task('images', () => {
@@ -95,13 +103,12 @@ gulp.task('extras', () => {
 
 gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 
-gulp.task('serve', ['styles', 'scripts', 'fonts'], () => {
+gulp.task('serve', ['styles', 'scripts', 'fonts', 'test-data'], () => {
   browserSync({
     notify: false,
     port: 9000,
     server: {
       baseDir: ['app', '.tmp'],
-      directory: true,
       index: "index.html",
       routes: {
         '/bower_components': 'bower_components'
@@ -128,8 +135,7 @@ gulp.task('serve:dist', () => {
     notify: false,
     port: 9000,
     server: {
-      baseDir: ['dist'],
-      directory: true
+      baseDir: ['dist']
     }
   });
 });
