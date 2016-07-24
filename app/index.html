@@ -22,7 +22,8 @@
   </head>
   <body>
 
-    <div class="container">
+    <div class="container-fluid">
+      <!-- navigation -->
       <div class="header">
         <ul class="nav nav-pills pull-right">
           <li class="active"><a href="#">Home</a></li>
@@ -32,6 +33,7 @@
         <h3 class="text-muted">peck·ing or·der</h3>
       </div>
 
+      <!-- controls -->
       <div class="well well-lg">
         <div class="row">
           <div class="col-xs-1"><h5>Diagram(s):<h5></div>
@@ -50,7 +52,12 @@
           </div>
         </div>
       </div>
-      <div id="diagram"></div>
+
+      <!-- content -->
+      <div class="span12">
+        <div id="diagram"></div>
+        <div class="loader"></div>
+      </div>
 
     </div>
 
@@ -86,11 +93,14 @@
         var themes = $("#themes");
         var download = $("#download");
 
+        //hide loader
+        $(".loader").hide();
+
         //generate list of diagrams
         $.getJSON( "data/diagrams.json", function(data) {
           appendToList(diagrams, data);
           selectStoredItem(diagrams);
-          
+
         });
 
          //eventhandler
@@ -120,6 +130,8 @@
           // clear diagram
           $("#diagram").empty();
 
+          $(".loader").show();
+
           var data = diagrams.val();
           var theme = themes.val();
           var diagram = Diagram.parse(data);
@@ -128,6 +140,8 @@
             scale: 1
           }
           diagram.drawSVG('diagram',options);
+
+          $(".loader").hide();
         }
 
         function downloadDiagram() {
