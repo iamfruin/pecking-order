@@ -12,6 +12,7 @@
     <!-- build:css styles/vendor.css -->
     <!-- bower:css -->
     <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="/bower_components/toastr/toastr.css"/>
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -67,6 +68,7 @@
     <script src="/bower_components/underscore/underscore-min.js"></script>
     <script src="/bower_components/raphael/raphael-min.js"></script>
     <script src="/bower_components/js-sequence-diagrams/build/sequence-diagram-min.js"></script>
+
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -83,6 +85,7 @@
     <script src="/bower_components/bootstrap/js/scrollspy.js"></script>
     <script src="/bower_components/bootstrap/js/collapse.js"></script>
     <script src="/bower_components/bootstrap/js/tab.js"></script>
+    <script src="/bower_components/toastr/toastr.js"></script>
     <!-- endbuild -->
 
     <!-- App -->
@@ -97,11 +100,19 @@
         $(".loader").hide();
 
         //generate list of diagrams
-        $.getJSON( "data/diagrams.json", function(data) {
-          appendToList(diagrams, data);
+        $.getJSON( "data/diagrams.json", function(data, textStatus, jqXHR) {
+          try{
+            toastr.info(textStatus+ ' reading diagrms.json');
+            appendToList(diagrams, data);
+          }
+          catch(err){
+            toastr.error('failed to append to list',err.message);
+          }
+          toastr.success('loaded ' + diagrams.find('option').length + ' wsd\'s to Diagram(s)');
           selectStoredItem(diagrams);
-
-        });
+          }).fail(function(jqXHR, textStatus, errorThrown){
+            toastr.error('failed to load diagrams.json',errorThrown);
+          });
 
          //eventhandler
         diagrams.change(function() {
@@ -158,6 +169,7 @@
         function appendToList(element, data) {
           $.each(data, function(key, val) {
             if (typeof val == "string") {
+              // Debug: toastr.info('added ' + key + ' to list');
               element.append($('<option>').text(key.replace(ext,'')).val(val));
             }
             else {

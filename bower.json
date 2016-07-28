@@ -17,6 +17,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^2.5.3",
-    "js-sequence-diagrams": "^1.0.6"
+    "js-sequence-diagrams": "^1.0.6",
+    "toastr": "^2.1.3"
   }
 }
