@@ -118,13 +118,11 @@ gulp.task('serve', ['styles', 'scripts', 'fonts', 'test-data'], () => {
 
   gulp.watch([
     'app/*.html',
-    'app/data/*.txt',
-    'app/data/**/*.txt',
+    'app/data/diagrams.json',
     'app/images/**/*',
     '.tmp/fonts/**/*'
   ]).on('change', reload);
 
-  gulp.watch('app/data/*.txt', ['test-data']);
   gulp.watch('app/data/**/*.txt', ['test-data'])
   gulp.watch('app/styles/**/*.css', ['styles']);
   gulp.watch('app/scripts/**/*.js', ['scripts']);
