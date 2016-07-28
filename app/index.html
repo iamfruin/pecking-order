@@ -57,7 +57,9 @@
       <!-- content -->
       <div class="span12">
         <div id="diagram"></div>
-        <div class="loader"></div>
+        <div class="loader-container" style="width: 15%; margin: 0 auto; display: none;">
+          <div class="loader"></div>
+        </div>
       </div>
 
     </div>
@@ -95,9 +97,6 @@
         var diagrams = $("#diagrams");
         var themes = $("#themes");
         var download = $("#download");
-
-        //hide loader
-        $(".loader").hide();
 
         //generate list of diagrams
         $.getJSON( "data/diagrams.json", function(data, textStatus, jqXHR) {
@@ -138,21 +137,29 @@
         }
 
         function drawDiagram() {
-          // clear diagram
-          $("#diagram").empty();
+          toggleSpinner();
 
-          $(".loader").show();
+          setTimeout(function(){
+            try{
+              // clear diagram
+              $("#diagram").empty();
 
-          var data = diagrams.val();
-          var theme = themes.val();
-          var diagram = Diagram.parse(data);
-          var options = {
-            theme: theme,
-            scale: 1
-          }
-          diagram.drawSVG('diagram',options);
-
-          $(".loader").hide();
+              var data = diagrams.val();
+              var theme = themes.val();
+              var diagram = Diagram.parse(data);
+              var options = {
+                theme: theme,
+                scale: 1
+              }
+              diagram.drawSVG('diagram',options);
+            }
+            catch(err){
+              toastr.error('failed to drawDiagram ',err.message);
+            }
+            finally{
+              toggleSpinner();
+            }
+          },0);
         }
 
         function downloadDiagram() {
@@ -180,6 +187,12 @@
             };
           });
         }
+
+        function toggleSpinner() {
+          $(".loader-container").toggle();
+          $("#diagram").toggle();
+        }
+
       })
     </script>
   </body>
