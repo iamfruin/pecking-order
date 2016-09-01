@@ -291,9 +291,8 @@
 
     download_link.click(function(ev) {
       var xml = encodeDiagram(diagram_div, editor.getValue());
-      var a = $(this);
-      a.attr("download", filename());
-      a.attr("href", "data:image/svg+xml," + encodeURIComponent(xml));
+      download_link.attr("download", filename());
+      download_link.attr("href", "data:image/svg+xml," + encodeURIComponent(xml));
 
     });
 
