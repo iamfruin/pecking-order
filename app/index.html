@@ -12,65 +12,105 @@
     <!-- build:css styles/vendor.css -->
     <!-- bower:css -->
     <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="/bower_components/toastr/toastr.css"/>
+        <link rel="stylesheet" href="/bower_components/toastr/toastr.css"/>
     <!-- endbower -->
     <!-- endbuild -->
 
-    <!-- build:css styles/main.css -->
-    <link rel="stylesheet" href="styles/main.css">
-    <!-- endbuild -->
+  <!-- build:css styles/main.css -->
+  <link rel="stylesheet" href="styles/main.css">
+  <!-- endbuild -->
 
-  </head>
-  <body>
+</head>
+<body>
 
-    <div class="container-fluid">
-      <!-- navigation -->
-      <div class="header">
-        <ul class="nav nav-pills pull-right">
-          <li class="active"><a href="#">Home</a></li>
-          <li class="active"><a href="https://github.com/iamfruin/pecking-order" target="_blank">GitHub</a></li>
-          <li class="active"><a href="https://bramp.github.io/js-sequence-diagrams/" target="_blank">Syntax Help</a></li>
-        </ul>
-        <h3 class="text-muted">peck·ing or·der</h3>
-      </div>
 
+  <div class="container-fluid">
+    <!-- navigation -->
+    <div class="header">
+      <ul class="nav nav-pills pull-right">
+        <li class="active"><a data-toggle="pill" href="#home">Home</a></li>
+        <li><a data-toggle="pill" href="#editor_tab">Editor</a></li>
+        <li><a href="https://github.com/iamfruin/pecking-order" target="_blank">GitHub</a></li>
+        <li><a href="https://bramp.github.io/js-sequence-diagrams/" target="_blank">Syntax Help</a></li>
+      </ul>
+      <h3 class="text-muted">peck·ing or·der</h3>
+    </div>
+
+    <div class="tab-content">
       <!-- controls -->
-      <div class="well well-lg">
-        <div class="row">
-          <div class="col-xs-1"><h5>Diagram(s):<h5></div>
-          <div class="col-xs-4">
-            <select id="diagrams" class="form-control"></select>
-          </div>
-          <div class="col-xs-1"><h5>Theme(s):<h5></div>
-          <div class="col-xs-4">
-            <select id="themes" class="form-control">
-              <option value="simple">Simple</option>
-              <option value="hand">Hand drawn</option>
-            </select>
-          </div>
-          <div class="col-xs-2">
-            <h5><a id="download" href="">Download as SVG</a></h5>
+      <div id="home" class="tab-pane fade in active">
+        <div class="well well-lg">
+          <div class="row">
+            <div class="col-xs-1"><h5>Diagram(s):<h5></div>
+            <div class="col-xs-4">
+              <select id="diagrams" class="form-control"></select>
+            </div>
+            <div class="col-xs-1"><h5>Theme(s):<h5></div>
+            <div class="col-xs-4">
+              <select id="themes" class="form-control">
+                <option value="simple">Simple</option>
+                <option value="hand">Hand drawn</option>
+              </select>
+            </div>
+            <div class="col-xs-2">
+              <h5><a id="download" href="">Download as SVG</a></h5>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- content -->
-      <div class="span12">
-        <div id="diagram"></div>
-        <div class="loader-container" style="width: 15%; margin: 0 auto; display: none;">
+        <!-- content -->
+        <div class="span12">
+          <div id="diagram"></div>
+          <div class="loader-container" style="width: 15%; margin: 0 auto; display: none;">
           <div class="loader"></div>
         </div>
+        </div>
+
       </div>
 
+      <div id="editor_tab" class="tab-pane">
+        <div class="well well-lg">
+          <div class="row">
+            <div class="col-xs-1"><h5>Name:<h5></div>
+              <input id="diagramName" type="text" class="col-xs-3" placeholder="<referenceId> - <project> - <action>"></input>
+            <div class="col-xs-1"><h5>Theme(s):<h5></div>
+            <div class="col-xs-3">
+              <select id="editor_themes" class="form-control">
+                <option value="simple">Simple</option>
+                <option value="hand">Hand drawn</option>
+              </select>
+            </div>
+            <div class="col-xs-2">
+              <h5><a id="editor_download_txt" href="">Download as txt</a></h5>
+            </div>
+            <div class="col-xs-2">
+              <h5><a id="editor_download_svg" href="">Download as SVG</a></h5>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="container">
+            <table align="left" class="inner">
+              <tr>
+                <td>
+                  <div class="editor" id="editor"></div>
+                  <td class="diagram" id="editor_diagram"/>
+                </tr>
+              </table>
+            </div>
+          </section>
+        </div>
+      </div>
     </div>
 
     <!-- build:js scripts/vendor.js -->
     <!-- bower:js -->
+        <!-- bower:js -->
     <script src="/bower_components/jquery/dist/jquery.js"></script>
     <script src="/bower_components/underscore/underscore-min.js"></script>
     <script src="/bower_components/raphael/raphael-min.js"></script>
     <script src="/bower_components/js-sequence-diagrams/build/sequence-diagram-min.js"></script>
-
+    <script src="/bower_components/ace-builds/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -88,15 +128,23 @@
     <script src="/bower_components/bootstrap/js/collapse.js"></script>
     <script src="/bower_components/bootstrap/js/tab.js"></script>
     <script src="/bower_components/toastr/toastr.js"></script>
+
     <!-- endbuild -->
 
+    <!-- build: scripts/* -->
+    <script src="scripts/svginnerhtml.min.js"></script>
+    <!-- endbuild-->
     <!-- App -->
     <script>
-      $(document).ready(function () {
-        var ext = ".txt";
-        var diagrams = $("#diagrams");
-        var themes = $("#themes");
-        var download = $("#download");
+    $(document).ready(function () {
+      var ext = ".txt";
+      var diagrams = $("#diagrams");
+      var themes = $("#themes");
+      var download = $("#download");
+      var save = $("#save");
+
+      toastr.options = {"positionClass": "toast-bottom-right"}
+      editor_setup();
 
         //generate list of diagrams
         $.getJSON( "data/diagrams.json", function(data, textStatus, jqXHR) {
@@ -114,10 +162,10 @@
           });
 
          //eventhandler
-        diagrams.change(function() {
+         diagrams.change(function() {
           var dropVal = $('option:selected', $(this)).text();
-            sessionStorage.setItem("SelectedDiagram", dropVal);
-            drawDiagram();
+          sessionStorage.setItem("SelectedDiagram", dropVal);
+          drawDiagram();
         });
 
         //eventhandler
@@ -126,8 +174,12 @@
         });
 
         download.click(function() {
-          downloadDiagram();
+          downloadDiagram($("#diagram"), diagrams.val());
         });
+
+        save.click(function(){
+          saveText();
+        })
 
         function selectStoredItem(element)
         {
@@ -162,14 +214,17 @@
           },0);
         }
 
-        function downloadDiagram() {
-          var svg = $("#diagram").find('svg')[0];
+        function encodeDiagram(diagram_div,data)
+        {
+          var svg = diagram_div.find('svg')[0];
           var width = parseInt(svg.width.baseVal.value);
           var height = parseInt(svg.height.baseVal.value);
-          var data = diagrams.val();
-          var xml = '<?xml version="1.0" encoding="utf-8" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd"><svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '" xmlns:xlink="http://www.w3.org/1999/xlink"><source><![CDATA[' + data + ']]></source>' + svg.innerHTML + '</svg>';
+          return '<?xml version="1.0" encoding="utf-8" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd"><svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '" xmlns:xlink="http://www.w3.org/1999/xlink"><source><![CDATA[' + data + ']]></source>' + svg.innerHTML + '</svg>';
+        }
 
-          download.attr("download", "diagram.svg");
+        function downloadDiagram(div, data) {
+          var xml = encodeDiagram(div,data);
+          download.attr("download", "diagrams.svg");
           download.attr("href", "data:image/svg+xml," + encodeURIComponent(xml));
         }
 
@@ -193,7 +248,107 @@
           $("#diagram").toggle();
         }
 
-      })
-    </script>
-  </body>
+
+        function openTab(evt, tabName) {
+    // Declare all variables
+    var i, tabcontent, tablinks;
+
+    // Get all elements with class="tabcontent" and hide them
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+
+    // Get all elements with class="tablinks" and remove the class "active"
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+
+    // Show the current tab, and add an "active" class to the link that opened the tab
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+  }
+
+  function editor_setup() {
+    var editor_div = $("#editor");
+    var diagram_div = $("#editor_diagram");
+    var theme_div = $("#editor_themes");
+    var download_link = $('#editor_download_svg');
+    var download_text = $('#editor_download_txt');
+    var diagram_name = document.getElementById('diagramName');//Can't seem to find it any other way...
+
+
+    var editor = ace.edit(editor_div.get(0));
+    editor.setTheme("ace/theme/crimson_editor");
+    editor.getSession().setMode("ace/mode/asciidoc");
+    editor.getSession().on('change', _.debounce(on_change, 100));
+    if (sessionStorage.getItem("EditorContent"))
+    {
+      editor.getSession().setValue(sessionStorage.getItem("EditorContent"))
+    }
+    
+
+    download_link.click(function(ev) {
+      var xml = encodeDiagram(diagram_div, editor.getValue());
+      download_link.attr("download", filename());
+      download_link.attr("href", "data:image/svg+xml," + encodeURIComponent(xml));
+
+    });
+
+    download_text.click(function(event) {
+      var data = editor.getValue().replace(/\n/g,"\r\n");
+      download_text.attr("download", filename());
+      download_text.attr("href", "data:text/plain;charset=utf-8," + encodeURIComponent(data));
+    });
+
+    theme_div.change(on_change);
+    on_change();
+
+    function filename()
+    {
+      var name = diagram_name.value;
+      if ( name == null || name == "")
+      {
+        name = "diagram";
+      }
+      return name;
+    }
+
+    function on_change() {
+      try {
+        sessionStorage.setItem("EditorContent", editor.getValue());
+        var diagram = Diagram.parse(editor.getValue());
+
+        editor.getSession().setAnnotations([]);
+
+
+            diagram_div.html('');
+
+            var options = {
+              theme: theme_div.val(),
+              scale: 1
+            };
+
+            diagram.drawSVG(diagram_div.get(0), options);
+
+          } catch(err) {
+            var ann = {
+              row: 0,
+              column:0,
+              text: err.message,
+              type: "error"
+            };
+            if (err instanceof Diagram.ParseError) {
+              ann.row = error.loc.first_line - 1;
+            }
+            editor.getSession().setAnnotations([ann]);
+          }
+        }
+      }
+
+    })
+</script>
+</body>
+
 </html>
